@@ -5,7 +5,9 @@
       <div class="flex flex-grow items-center">
         <ul class="flex flex-row mt-1">
           <li>
-            <a class="px-2 text-white" href="#">Login / Register</a>
+            <a class="px-2 text-white" href="#" @click.prevent="toggleAuthModal"
+              >Login / Register</a
+            >
           </li>
           <li>
             <a class="px-2 text-white" href="#">Manage</a>
@@ -17,7 +19,14 @@
 </template>
 
 <script>
-export default {};
+import { mapMutations } from 'vuex';
+
+export default {
+  name: 'Header',
+  methods: {
+    ...mapMutations(['toggleAuthModal']),
+  },
+};
 </script>
 
 <style></style>
