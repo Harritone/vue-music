@@ -95,10 +95,18 @@
             </button>
           </form>
           <!-- Registration Form -->
+          <div
+            class="p-5 font-bold text-center text-white rounded b-4"
+            v-if="reg_show_alert"
+            :class="reg_alert_variant"
+          >
+            {{ reg_alert_msg }}
+          </div>
           <vee-form
             v-show="tab === 'register'"
             :validation-schema="schema"
             @submit="register"
+            :initial-values="userData"
           >
             <!-- Name -->
             <div class="mb-3">
@@ -139,13 +147,22 @@
             <div class="mb-3">
               <label class="inline-block mb-2">Password</label>
               <vee-field
+                v-slot="{ field, errors }"
                 name="password"
-                type="password"
-                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
+                :bails="false"
+              >
+                <input
+                  class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
                   duration-500 focus:outline-none focus:border-black rounded"
-                placeholder="Password"
-              />
-              <ErrorMessage class="text-red-600" name="password" />
+                  placeholder="Password"
+                  type="password"
+                  v-bind="field"
+                />
+                <div class="text-red-600" v-for="error in errors" :key="error">
+                  {{ error }}
+                </div>
+              </vee-field>
+              <!-- <ErrorMessage class="text-red-600" name="password" /> -->
             </div>
             <!-- Confirm Password -->
             <div class="mb-3">
@@ -192,6 +209,7 @@
               type="submit"
               class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition
                 hover:bg-purple-700"
+              :disabled="reg_in_submission"
             >
               Submit
             </button>
@@ -215,10 +233,17 @@ export default {
         email: 'required|min:3|max:100|email',
         age: 'required|min_value:18|max_value:100',
         password: 'required|min:3|max:100',
-        confirm_password: 'confirmed:@password',
-        country: 'required|excluded:Presto,USA',
-        tos: 'required',
+        confirm_password: 'passwords_mismatch:@password',
+        country: 'required|country_excluded:Presto',
+        tos: 'tos',
       },
+      userData: {
+        country: 'USA',
+      },
+      reg_in_submission: false,
+      reg_show_alert: false,
+      reg_alert_variant: 'bg-blue-500',
+      reg_alert_msg: 'Please wait! Your account is being created.',
     };
   },
   computed: {
@@ -230,6 +255,13 @@ export default {
   methods: {
     ...mapMutations(['toggleAuthModal']),
     register(values) {
+      this.reg_show_alert = true;
+      this.reg_in_submission = true;
+      this.reg_alert_variant = 'bg-blue-500';
+      this.reg_alert_msg = 'Please wait! Your account is being created.';
+
+      this.reg_alert_variant = 'bg-green-500';
+      this.reg_alert_msg = 'Success! Your account have been created!';
       console.log(values);
     },
   },
