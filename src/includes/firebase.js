@@ -20,6 +20,14 @@ const db = firebase.firestore();
 const storage = firebase.storage();
 const usersCollection = db.collection('users');
 const songsCollection = db.collection('songs');
+const commentsCollection = db.collection('comments');
 
 // eslint-disable-next-line object-curly-newline
-export { auth, db, usersCollection, storage, songsCollection };
+export {
+  auth,
+  db,
+  usersCollection,
+  storage,
+  songsCollection,
+  commentsCollection,
+};

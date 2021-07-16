@@ -22,6 +22,7 @@
         >
           <h5>Drop your files here</h5>
         </div>
+        <input type="file" multiple @change="upload($event)" />
         <hr class="my-6" />
         <!-- Progess Bars -->
         <div class="mb-4" v-for="upload in uploads" :key="upload.name">
@@ -54,12 +55,15 @@ export default {
       uploads: [],
     };
   },
+  props: ['addSong'],
   methods: {
     upload($event) {
       this.is_dragover = false;
+
       const files = $event.dataTransfer
         ? [...$event.dataTransfer.files]
         : [...$event.target.files];
+
       files.forEach((file) => {
         if (file.type !== 'audio/mpeg') {
           return;
@@ -103,7 +107,9 @@ export default {
             };
 
             song.url = await task.snapshot.ref.getDownloadURL();
-            await songsCollection.add(song);
+            const songRef = await songsCollection.add(song);
+            const songSnapshot = await songRef.get();
+            this.addSong(songSnapshot);
 
             this.uploads[uploadIndex].variant = 'bg-green-400';
             this.uploads[uploadIndex].icon = 'fas fa-check';
@@ -112,6 +118,16 @@ export default {
         );
       });
     },
+    cancelUploads() {
+      this.uploads.forEach((upload) => {
+        upload.task.cancel();
+      });
+    },
+  },
+  beforeUnmount() {
+    this.uploads.forEach((upload) => {
+      upload.task.cancel();
+    });
   },
 };
 </script>
